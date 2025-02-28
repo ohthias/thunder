@@ -20,8 +20,8 @@ void segueLinha() {
     Serial.println("Algum sensor da esquerda está vendo preto, fazendo correção");
     if (valor_extremo_esquerdo <= preto) {
       Serial.println("Curva acentuada para a esquerda detectada");
-      velocidade_esquerda = velocidade_base - 100;  // Ajuste esses valores conforme necessário
-      velocidade_direita = velocidade_base + 100;
+      velocidade_esquerda = velocidade_base - velocidade_correção;
+      velocidade_direita = velocidade_base + velocidade_correção;
     } else {
       erro = valor_esquerdo - valor_direito;
       integral += erro;
@@ -32,15 +32,15 @@ void segueLinha() {
 
       velocidade_esquerda = velocidade_base - correcao;
       velocidade_direita = velocidade_base + correcao;
-      velocidade_esquerda = constrain(velocidade_esquerda, 0, 255);
-      velocidade_direita = constrain(velocidade_direita, 0, 255);
+      velocidade_esquerda = constrain(velocidade_esquerda, 0, velocidade_max);
+      velocidade_direita = constrain(velocidade_direita, 0, velocidade_max);
     }
   } else if (algum_direita_preto) {
     Serial.println("Algum sensor da direita está vendo preto, fazendo correção");
     if (valor_extremo_direito <= preto) {
       Serial.println("Curva acentuada para a direita detectada");
-      velocidade_esquerda = velocidade_base + 100;  // Ajuste esses valores conforme necessário
-      velocidade_direita = velocidade_base - 100;
+      velocidade_esquerda = velocidade_base + velocidade_correção; 
+      velocidade_direita = velocidade_base - velocidade_correção;
     } else {
       erro = valor_esquerdo - valor_direito;
       integral += erro;

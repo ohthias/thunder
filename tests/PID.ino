@@ -27,6 +27,7 @@ int velocidade_esquerda, velocidade_direita;
 int preto = 200;
 int velocidade_base = 10;  // Velocidade base dos motores (aumentada para melhor movimento)
 int velocidade_max = 200;
+int velocidade_correção = 100;
 
 void setup() {
   pinMode(MOTOR_ESQUERDO_FRENTE, OUTPUT);

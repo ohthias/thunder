@@ -1,3 +1,5 @@
+#include <HCSR04.h>
+
 // Sentidos
 #define MOTOR_ESQUERDO_FRENTE 5
 #define MOTOR_ESQUERDO_TRAS 6
@@ -41,6 +43,11 @@ int erro_anterior = 0;
 int integral = 0;
 int derivativo = 0;
 
+bool flagObstaculo = false;
+int distancia_frente = 0;
+#define T_PIN_frente 24
+#define E_PIN_frente 25
+UltraSonicDistanceSensor ultra_frente(T_PIN_frente, E_PIN_frente);
 
 /* Calibração */
 int preto = 200;
@@ -64,8 +71,14 @@ void setup() {
 }
 
 void loop() {
+  distancia_frente = ultra_frente.measureDistanceCm();
+  distancia_frente <= 15 ? flagObstaculo = true : flagObstaculo = false;
+
   while (flags == Flags_verde::nenhum) {
     segueLinha();
+    if(flagObstaculo) {
+      desvioObstaculo();
+    }
   }
 
   //Flags de curva
