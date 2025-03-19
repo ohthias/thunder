@@ -1,3 +1,37 @@
+/**
+ * Função segueLinha
+ * 
+ * Esta função é responsável por controlar o movimento do robô seguindo uma linha preta.
+ * Ela lê os valores dos sensores de linha e ajusta a velocidade dos motores para manter o robô na linha.
+ * 
+ * Lógica:
+ * - Se todos os sensores detectarem preto, o robô para e chama a função identificaVerde.
+ * - Se algum sensor da esquerda detectar preto, o robô corrige sua trajetória para a esquerda.
+ * - Se algum sensor da direita detectar preto, o robô corrige sua trajetória para a direita.
+ * - Se nenhum sensor detectar preto, o robô gira no lugar para encontrar a linha.
+ * - Caso contrário, o robô continua em linha reta.
+ * 
+ * A função utiliza um controlador PID para ajustar a velocidade dos motores e manter o robô na linha.
+ * 
+ * Sensores utilizados:
+ * - SENSOR_EXTREMO_ESQUERDO
+ * - SENSOR_ESQUERDO
+ * - SENSOR_CENTRO
+ * - SENSOR_DIREITO
+ * - SENSOR_EXTREMO_DIREITO
+ * 
+ * Variáveis globais utilizadas:
+ * - preto: valor de referência para a cor preta
+ * - velocidade_base: velocidade base dos motores
+ * - velocidade_correção: valor de correção de velocidade
+ * - velocidade_max: velocidade máxima dos motores
+ * - Kp, Ki, Kd: constantes do controlador PID
+ * - erro, erro_anterior, integral, derivativo: variáveis do controlador PID
+ * - motoresRobo: objeto que controla os motores do robô
+ * 
+ * A função também utiliza a função delay para criar pausas no código.
+ */
+
 void segueLinha() {
   int valor_extremo_esquerdo = analogRead(SENSOR_EXTREMO_ESQUERDO);
   int valor_esquerdo = analogRead(SENSOR_ESQUERDO);
@@ -12,8 +46,7 @@ void segueLinha() {
 
   if (todos_preto) {
     Serial.println("Estão todos vendo preto - Parando o robô");
-    analogWrite(MOTOR_ESQUERDO_FRENTE, 0);
-    analogWrite(MOTOR_DIREITO_FRENTE, 0);
+    motoresRobo.off();
     delay(150);
     identificaVerde();
   } else if (algum_esquerda_preto) {
@@ -65,28 +98,9 @@ void segueLinha() {
     velocidade_direita = velocidade_base;
   }
 
-  analogWrite(MOTOR_ESQUERDO_FRENTE, velocidade_esquerda);
-  analogWrite(MOTOR_ESQUERDO_TRAS, 0);
-  analogWrite(MOTOR_DIREITO_FRENTE, velocidade_direita);
-  analogWrite(MOTOR_DIREITO_TRAS, 0);
+  motoresRobo.run(velocidade_esquerda, velocidade_direita);
 
   erro_anterior = erro;
 
   delay(10);
-}
-
-void identificaVerde() {
-  int valor_LDR_esquerda = analogRead(LDR_esquerda);
-  int valor_LDR_direita = analogRead(LDR_direita);
-
-  if (valor_LDR_esquerda < verde && valor_LDR_direita < verde) {
-    flags = Flags_verde::beco;
-  } else if (valor_LDR_direita < verde) {
-    flags = Flags_verde::curvaDireita;
-  } else if (valor_LDR_esquerda < verde) {
-    flags = Flags_verde::curvaEsquerda;
-  } else {
-    flags = Flags_verde::nenhum;
-  }
-  delay(1500);
 }

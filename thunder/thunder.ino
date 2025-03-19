@@ -1,17 +1,7 @@
 #include <HCSR04.h>
+#include "/class/dualMotors.h"
 
-// Sentidos
-#define MOTOR_ESQUERDO_FRENTE 5
-#define MOTOR_ESQUERDO_TRAS 6
-#define MOTOR_DIREITO_FRENTE 9
-#define MOTOR_DIREITO_TRAS 10
-
-// Encoders
-#define PINO_ENCODER_ESQUERDO 4
-#define PINO_ENCODER_DIREITO 11
-
-volatile int contagemEncoderEsquerdo = 0;
-volatile int contagemEncoderDireito = 0;
+DualMotor motoresRobo(2, 3, 4, 5);
 
 // Sensores Refletância
 #define SENSOR_EXTREMO_ESQUERDO A0
@@ -59,14 +49,6 @@ int velocidade_base = 10;  // Velocidade base dos motores (aumentada para melhor
 int velocidade_max = 200;
 
 void setup() {
-  pinMode(MOTOR_ESQUERDO_FRENTE, OUTPUT);
-  pinMode(MOTOR_ESQUERDO_TRAS, OUTPUT);
-  pinMode(MOTOR_DIREITO_FRENTE, OUTPUT);
-  pinMode(MOTOR_DIREITO_TRAS, OUTPUT);
-
-  pinMode(PINO_ENCODER_ESQUERDO, INPUT_PULLUP);
-  pinMode(PINO_ENCODER_DIREITO, INPUT_PULLUP);
-
   Serial.begin(9600);
 }
 
@@ -85,20 +67,20 @@ void loop() {
   switch(flags) {
     case Flags_verde::curvaDireita:
       Serial.println("Curva para a direita detectada");
-      curvaDireita90Graus();
+      //adicionar curva
       flags = Flags_verde::nenhum;
       break;
 
     case Flags_verde::curvaEsquerda:
       Serial.println("Curva para a esquerda detectada");
-      curvaEsquerda90Graus();
+      //adicionar curva 
       delay(1000);
       flags = Flags_verde::nenhum;
       break;
 
     case Flags_verde::beco:
       Serial.println("Beco detectado");
-      meiaVolta();
+      //adicionar beco
       delay(1000);
       flags = Flags_verde::nenhum;
       break;
