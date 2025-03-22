@@ -14,6 +14,11 @@ DualMotor motoresRobo(2, 3, 4, 5);
 #define LDR_esquerda A7
 #define LDR_direita A8
 
+// Botões
+#define button_center 6
+#define button_right 7
+#define button_left 8
+
 // Flags Verde
 enum class Flags_verde {
   curvaDireita,
@@ -49,45 +54,63 @@ int velocidade_base = 10;  // Velocidade base dos motores (aumentada para melhor
 int velocidade_max = 200;
 
 void setup() {
+  pinMode(button_center, INPUT);
+  pinMode(button_right, INPUT);
+  pinMode(button_left, INPUT);
+
+  motoresRobo.off();
   Serial.begin(9600);
 }
 
 void loop() {
-  distancia_frente = ultra_frente.measureDistanceCm();
-  distancia_frente <= 15 ? flagObstaculo = true : flagObstaculo = false;
+  if(digitalRead(button_center) == HIGH) {
+    calibragem();
+  } else if(digitalRead(button_right) == HIGH) {
+    distancia_frente = ultra_frente.measureDistanceCm();
+    distancia_frente <= 15 ? flagObstaculo = true : flagObstaculo = false;
 
-  while (flags == Flags_verde::nenhum) {
-    segueLinha();
-    if(flagObstaculo) {
-      desvioObstaculo();
+    while (flags == Flags_verde::nenhum) {
+      segueLinha();
+      if(flagObstaculo) {
+        desvioObstaculo();
+      }
     }
-  }
 
-  //Flags de curva
-  switch(flags) {
-    case Flags_verde::curvaDireita:
-      Serial.println("Curva para a direita detectada");
-      //adicionar curva
-      flags = Flags_verde::nenhum;
-      break;
+    //Flags de curva
+    switch(flags) {
+      case Flags_verde::curvaDireita:
+        Serial.println("Curva para a direita detectada");
+        while(tempoCurva < 1000) {
+          motoresRobo.curvaDireita(velocidade_base);
+          tempoCurva++;
+        }
+        flags = Flags_verde::nenhum;
+        break;
 
-    case Flags_verde::curvaEsquerda:
-      Serial.println("Curva para a esquerda detectada");
-      //adicionar curva 
-      delay(1000);
-      flags = Flags_verde::nenhum;
-      break;
+      case Flags_verde::curvaEsquerda:
+        Serial.println("Curva para a esquerda detectada");
+        while(tempoCurva < 1000) {
+          motoresRobo.curvaEsquerda(velocidade_base);
+          tempoCurva++;
+        }
+        delay(1000);
+        flags = Flags_verde::nenhum;
+        break;
 
-    case Flags_verde::beco:
-      Serial.println("Beco detectado");
-      //adicionar beco
-      delay(1000);
-      flags = Flags_verde::nenhum;
-      break;
+      case Flags_verde::beco:
+        Serial.println("Beco detectado");
+        while(tempoCurva < 2000) {
+          motoresRobo.curvaEsquerda(velocidade_base);
+          tempoCurva++;
+        }
+        delay(1000);
+        flags = Flags_verde::nenhum;
+        break;
 
-    case Flags_verde::nenhum:
-      Serial.println("Nenhuma curva ou beco detectado");
-      break;
-  }
-  delay(100);
+      case Flags_verde::nenhum:
+        Serial.println("Nenhuma curva ou beco detectado");
+        break;
+    }
+    delay(100);
+}
 }
