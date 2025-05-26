@@ -1,2 +1,3 @@
-# OBR_base
-Programa base para equipes com segue linha usando PID, flags e estados
+# THUNDER
+
+Robo segue-linha com PID e flags
